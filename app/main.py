@@ -11,9 +11,9 @@ Log(7)
 Active = True
 ConsolVer = "BETA 0.1.8 Build 1"
 ConsolStartUpMessage = f"Welcome to MTerminal {ConsolVer}"
-UserInput = None
-UserInput2 = None
-UserInput3 = None
+UserInput = ""
+UserInput2 = ""
+UserInput3 = ""
 CommandsExecutedInSesion = 0
 ComIdChar = "/" #Declares the character(s) to reconize commands
 adminLoggedIn = system.adminLoggedIn
@@ -62,7 +62,7 @@ DualParameterCommands = list(Com2)
 
 Log(3, 'Global Command')
 
-def Error(Error: int, Data: str = None, Data2: str = None):
+def Error(Error: int, Data: str = "", Data2: str = ""):
 	"""
 	This function processes the userInputed data and returns the error message for a certain error
 
@@ -108,10 +108,10 @@ def GetUserInput():
 	global Com2
 	UserInput = userInput(1)
 	if UserInput in DualParameterCommands:
-		UserInput2 = userInput("Enter first parameter for command: \n")
-		UserInput3 = userInput("Enter second parameter for command: ")
+		UserInput2 = userInput(0,"Enter first parameter for command: \n")
+		UserInput3 = userInput(0,"Enter second parameter for command: ")
 	elif UserInput in OneParameterCommands:
-		UserInput2 = userInput("Enter first parameter for command: ")
+		UserInput2 = userInput(0,"Enter first parameter for command: ")
 
 #Defines the "help" command
 def CommandHelp():
@@ -238,7 +238,7 @@ def ExecuteCommand():
 
 		else:
 			ErrPrint(ERR_0)
-			Log(2, Error(0))
+			Log(2, Error(0, UserInput)) # type: ignore
 			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
 
 #Defines the start of the program

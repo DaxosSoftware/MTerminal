@@ -38,7 +38,7 @@ def ErrPrint(Text: str):
 	Beep(1000, 500)
 	print(f'{RED}[ERROR]: {Text}{RESET}')
 
-def Log(Type: int, Data: str = None):
+def Log(Type: int, Data: str = ""):
 	"""
 	Logs data in a specific rule set for debuging perposes
 
@@ -84,14 +84,15 @@ def Log(Type: int, Data: str = None):
  ["""+ Time + "]: "+ Text)
 	logs.close()
 
-def userInput(Type: int = 0, Text: str = None):
+def userInput(Type: int = 0, Text: str = ""):
 	if Type == 0:
 		SysPrint(Text)
 		if adminLoggedIn == False:
 			Input = input(GuestID)
 		else:
 			Input = input(AdminID)
-	elif Type == 1:
+	#elif Type == 1:
+	else:
 		if adminLoggedIn == False:
 			Input = input(GuestID)
 		else:

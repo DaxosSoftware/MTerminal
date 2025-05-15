@@ -19,7 +19,7 @@ ERR_4 = "ERR-4"
 
 NewCommands = False
 
-def Log(Type: int, Data: str = None):
+def Log(Type: int, Data: str = ""):
 	"""
 	Logs data in a specific rule set for debuging perposes
 
@@ -62,7 +62,7 @@ def Log(Type: int, Data: str = None):
  ["""+ Time + "]: "+ Text)
 	logs.close()
 
-def Error(Error: int, Data: str = None, Data2: str = None):
+def Error(Error: int, Data: str = "", Data2: str = ""):
 	"""
 	This function processes the Inputed data and returns the error message for a certain error
 
@@ -92,7 +92,7 @@ def Error(Error: int, Data: str = None, Data2: str = None):
 
 #Defines the "randomInt" command
 def CommandRandomInt(num1, num2):
-    SysPrint(random.randrange(num1, num2))
+    SysPrint(f"{random.randrange(num1, num2)}")
     Log(1, 'CommandRandomInt')
     winsound.Beep(700, 500) #Plays a beeping sound
 
@@ -174,7 +174,7 @@ def get_word():
         words1 = ["python", "run", "fun", "computer", "science", "reindeer", "marry", "kill", "technology", "wash", "civilian", "cow", "obligation", "uncle", "abortion", "throat", "chase", "weave", "brick", "grave", "plane", "five", "cook", "train", "names"]
         words2 = ['hello', 'truck', 'bus', 'down', 'dawn', 'swish', 'name', 'money', 'monday', 'ruck', 'ruckus', 'baby', 'cop', 'criminal', 'firefighter', 'cancer', 'lung', 'lungs', 'city', 'java', 'c sharp', 'c plus plus', 'go', 'twenty', 'one', 'two', 'three']
         words1.extend(words2)
-        words = words1.sort()
+        words = words1
         return random.choice(words)
 
 def play_hangman(debugging):
@@ -189,11 +189,11 @@ def play_hangman(debugging):
 
     while lives > 0 and len(word_letters) > 0:
         # Letters used
-        SysPrint("Used letters: ", " ".join(used_letters))
+        SysPrint("Used letters: ", " ".join(used_letters)) # type: ignore
 
         # Current word (e.g. p - t - o n)
         word_list = [letter if letter in used_letters else "-" for letter in word]
-        SysPrint("Current word: ", " ".join(word_list))
+        SysPrint("Current word: ", " ".join(word_list)) # type: ignore
         if debugging != True:
             user_letter = userInput(0, "Guess a letter: ").lower()
             if user_letter in alphabet - used_letters:
@@ -214,12 +214,12 @@ def play_hangman(debugging):
 
             # Gets here when len(word_letters) == 0 OR lives == 0
             if lives == 0:
-                SysPrint("You died, sorry. The word was", word)
+                SysPrint(f"You died, sorry. The word was {word}") # type: ignore
             elif len(word_letters) == 0:
-                SysPrint("You guessed the word", word, "!!")
+                SysPrint(f"You guessed the word {word}, !!")
         else:
-            SysPrint("You died, sorry. The word was", word)
-            SysPrint("You guessed the word", word, "!!")
+            SysPrint(f"You died, sorry. The word was {word}")
+            SysPrint(f"You guessed the word {word}, !!")
 
 def Hangman(debugging):
     Log(1, 'Hangman')
