@@ -1,8 +1,9 @@
 # This file contains all the data for main functions
 
 from datetime import datetime
+from re import U
 from time import sleep
-from winsound import Beep
+import winsound
 from sys import exit
 
 RED = '\033[31m'
@@ -30,17 +31,37 @@ tries = 0
 GuestID = f'{CYAN}[GUEST]: {RESET}'
 AdminID = f'{CYAN}[ADMIN]: {RESET}'
 
-def SysPrint(Text: str):
+
+def MuteAudio():
+	global AudioMuted
+	AudioMuted = True
+
+def UnmuteAudio():
+	global AudioMuted
+	AudioMuted = False
+
+UnmuteAudio()
+
+def Beep(Frequency: int, Duration: int):
+	if AudioMuted == False:
+		winsound.Beep(Frequency, Duration)
+	
+	else:
+		pass
+
+def Print(Text: str):
 	Beep(700, 500)
 	print(f'{SysID}{Text}')
+	sleep(0.15)
 
-def ErrPrint(Text: str):
+def ErrorPrint(Text: str):
 	Beep(1000, 500)
 	print(f'{RED}[ERROR]: {Text}{RESET}')
+	sleep(0.15)
 
 def Log(Type: int, Data: str = ""):
 	"""
-	Logs data in a specific rule set for debuging perposes
+	Logs data in a specific rule set for debugging purposes
 
 	Args:
 		Type (int): Determines how the data is logged
@@ -84,19 +105,20 @@ def Log(Type: int, Data: str = ""):
  ["""+ Time + "]: "+ Text)
 	logs.close()
 
-def userInput(Type: int = 0, Text: str = ""):
+def userInput(Text: str = "", Type: int = 0) -> str:
 	if Type == 0:
-		SysPrint(Text)
+		Print(Text)
 		if adminLoggedIn == False:
 			Input = input(GuestID)
 		else:
 			Input = input(AdminID)
-	#elif Type == 1:
+	elif Type == 1:
+		if adminLoggedIn == False:
+			Input = input(GuestID)
+		else:
+			Input = input(AdminID)
 	else:
-		if adminLoggedIn == False:
-			Input = input(GuestID)
-		else:
-			Input = input(AdminID)
+		Input = "TypeError"
 	return Input
 
 def Exit():
@@ -109,7 +131,7 @@ def Exit():
     RandNum = random.randrange(0, 1_000_000)
 
     if RandNum == 13:
-        ErrPrint(ERR_1) #if this happens to you... you're VERY lucky... or very unlucky
+        ErrorPrint(ERR_1) #if this happens to you... you're VERY lucky... or very unlucky
         Log(2, Error(1))
     else:
         Log(0)
@@ -119,21 +141,21 @@ def SignIntoAdmin():
 	global tries
 
 	while tries < 3:
-		Password = userInput(0, "Enter Admin Password: ")
+		Password = userInput("Enter Admin Password: ", Type=0)
 		if Password == adminPassword:
-			SysPrint("Correct Password...")
-			SysPrint("Signing into Admin account...")
+			Print("Correct Password...")
+			Print("Signing into Admin account...")
 
-			SysPrint("Successfully signed into Admin account")
+			Print("Successfully signed into Admin account")
 			adminLoggedIn = True
 			return
 	
 		else:
-			ErrPrint("Incorrect password please try again")
+			ErrorPrint("Incorrect password please try again")
 			adminLoggedIn = False
 			tries += 1
 	
-	SysPrint("Too many tries to log into the Admin account")
-	SysPrint("Closing Program...")
+	Print("Too many tries to log into the Admin account")
+	Print("Closing Program...")
 	Log(2, "Too many tries to log into the Admin account, closing program")
 	Exit()
