@@ -1,14 +1,16 @@
-#This is the commands module
-#This module contains all the commands for the program
+# This is the commands module
+# This module contains all the commands for the program
 import random
 import sys
 import time
 import os
 import datetime
-import winsound
-from system import *
+import system
+from system import Log
 
-CommandsExecutedInSesion = 0
+CommandsExecutedInSession = 0
+
+FolderName = "app"
 
 #Declares global error variables
 ERR_0 = "ERR-0"
@@ -21,7 +23,7 @@ NewCommands = False
 
 def Log(Type: int, Data: str = ""):
 	"""
-	Logs data in a specific rule set for debuging perposes
+	Logs data in a specific rule set for debugging purposes
 
 	Args:
 		Type (int): Determines how the data is logged
@@ -56,7 +58,7 @@ def Log(Type: int, Data: str = ""):
 	else:
 		return ERR_4
 
-	Time = str(datetime.now())
+	Time = str(datetime.datetime.now())
 	logs = open("logs.txt","a")
 	logs.writelines("""
  ["""+ Time + "]: "+ Text)
@@ -64,7 +66,7 @@ def Log(Type: int, Data: str = ""):
 
 def Error(Error: int, Data: str = "", Data2: str = ""):
 	"""
-	This function processes the Inputed data and returns the error message for a certain error
+	This function processes the Inputted data and returns the error message for a certain error
 
 	Args:
 		Error (int): The integer value of the Error of the Error message you want
@@ -72,7 +74,7 @@ def Error(Error: int, Data: str = "", Data2: str = ""):
 		Data2 (str): The second set of Data needed for some error messages
 	
 	Returns:
-		str: The Error messaage created from the userInputted data
+		str: The Error message created from the system.userInputted data
 	"""
 
 	if Error == 0:
@@ -85,29 +87,29 @@ def Error(Error: int, Data: str = "", Data2: str = ""):
 		return f'Could not find file: {Data} ## ERR-2'
 	
 	elif Error == 3:
-		return f'An unexpected internal error has occured within: {Data} ## ERR-3'
+		return f'An unexpected internal error has occurred within: {Data} ## ERR-3'
 	
 	elif Error == 4:
 		return f"Arg: '{Data}' in function: '{Data2}' is invalid ## ERR-4"
 
 #Defines the "randomInt" command
 def CommandRandomInt(num1, num2):
-    SysPrint(f"{random.randrange(num1, num2)}")
+    system.Print(str(random.randrange(num1, num2)))
     Log(1, 'CommandRandomInt')
-    winsound.Beep(700, 500) #Plays a beeping sound
+    system.Beep(700, 500) #Plays a beeping sound
 
 #Defines the "exit" command
 def CommandExit():
     global ERR_1
 
     Log(1, "CommandExit")
-    winsound.Beep(700, 500) #Plays a beeping sound
+    system.Beep(700, 500) #Plays a beeping sound
     sys.exit(0)
 
     RandNum = random.randrange(0, 1_000_000)
 
     if RandNum == 13:
-        ErrPrint(ERR_1) #if this happens to you... you're VERY lucky... or very unlucky
+        system.ErrorPrint(ERR_1) #if this happens to you... you're VERY lucky... or very unlucky
         Log(2, Error(1))
     else:
         Log(0)
@@ -116,19 +118,19 @@ def CommandExit():
 def CommandErrors():
     Log(1, 'CommandErrors')
     
-    winsound.Beep(700, 500) #Plays a beeping sound
-    SysPrint('Code:       Meaning:')
-    SysPrint("\n")
-    SysPrint("ERR-0: Command is not valid or does not exist")
-    SysPrint("ERR-1: The program has failed to close")
-    SysPrint("ERR-3: An unexpected internal error has occured")
-    SysPrint("ERR-4: Arg: '' in function: '' is invalid")
+    system.Beep(700, 500) #Plays a beeping sound
+    system.Print('Code:       Meaning:')
+    system.Print("\n")
+    system.Print("ERR-0: Command is not valid or does not exist")
+    system.Print("ERR-1: The program has failed to close")
+    system.Print("ERR-3: An unexpected internal error has occurred")
+    system.Print("ERR-4: Arg: '' in function: '' is invalid")
     
 def CommandPercy():
     Log(1, 'CommandPercy')
 
-    winsound.Beep(700, 500) #Plays a beeping sound
-    SysPrint('''@@@@@@@%%@@@%%%%%%%%%%%#%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%###%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    system.Beep(700, 500) #Plays a beeping sound
+    system.Print('''@@@@@@@%%@@@%%%%%%%%%%%#%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%###%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@%@@@@%%%%%%%%%%########%%@@@@@@@@@@@@@@@@@@@@@@@@@@@%%#*****#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@%%%%%%%%%%%%#########%%%@@@@@@@@@@%@@%%@%%%%%*+++++****#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@%%%%%%%%%%%%%%%%%#******####%%####***++****#*####%##******#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -171,10 +173,9 @@ def CommandPercy():
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%%@%''')
     
 def get_word():
-        words1 = ["python", "run", "fun", "computer", "science", "reindeer", "marry", "kill", "technology", "wash", "civilian", "cow", "obligation", "uncle", "abortion", "throat", "chase", "weave", "brick", "grave", "plane", "five", "cook", "train", "names"]
-        words2 = ['hello', 'truck', 'bus', 'down', 'dawn', 'swish', 'name', 'money', 'monday', 'ruck', 'ruckus', 'baby', 'cop', 'criminal', 'firefighter', 'cancer', 'lung', 'lungs', 'city', 'java', 'c sharp', 'c plus plus', 'go', 'twenty', 'one', 'two', 'three']
-        words1.extend(words2)
-        words = words1
+        words: list[str] = ["python", "run", "fun", "computer", "science", "reindeer", "marry", "kill", "technology", "wash", "civilian", "cow", "obligation", "uncle", "abortion", "throat", "chase", "weave", "brick", "grave", "plane", "five", "cook", "train", "names"]
+        words2: list[str] = ['hello', 'truck', 'bus', 'down', 'dawn', 'swish', 'name', 'money', 'monday', 'ruck', 'ruckus', 'baby', 'cop', 'criminal', 'firefighter', 'cancer', 'lung', 'lungs', 'city', 'java', 'c sharp', 'c plus plus', 'go', 'twenty', 'one', 'two', 'three']
+        words.extend(words2)
         return random.choice(words)
 
 def play_hangman(debugging):
@@ -189,77 +190,109 @@ def play_hangman(debugging):
 
     while lives > 0 and len(word_letters) > 0:
         # Letters used
-        SysPrint("Used letters: ", " ".join(used_letters)) # type: ignore
+        system.Print(f"Used letters: {" ".join(used_letters)}")
 
         # Current word (e.g. p - t - o n)
         word_list = [letter if letter in used_letters else "-" for letter in word]
-        SysPrint("Current word: ", " ".join(word_list)) # type: ignore
+        system.Print(f"Current word: {" ".join(word_list)}")
         if debugging != True:
-            user_letter = userInput(0, "Guess a letter: ").lower()
+            user_letter = input("Guess a letter: ").lower()
             if user_letter in alphabet - used_letters:
                 used_letters.add(user_letter)
                 if user_letter in word_letters:
                     word_letters.remove(user_letter)
-                    SysPrint("")
+                    system.Print("")
 
                 else:
                     lives -= 1  # Takes away a life if wrong
-                    SysPrint("Letter is not in word.")
+                    system.Print("Letter is not in word.")
 
             elif user_letter in used_letters:
-                SysPrint("You have already used that character. Please try again.")
+                system.Print("You have already used that character. Please try again.")
     
             else:
-                SysPrint("Invalid character. Please try again.")
+                system.Print("Invalid character. Please try again.")
 
             # Gets here when len(word_letters) == 0 OR lives == 0
             if lives == 0:
-                SysPrint(f"You died, sorry. The word was {word}") # type: ignore
+                system.Print(f"You died, sorry. The word was {word}")
             elif len(word_letters) == 0:
-                SysPrint(f"You guessed the word {word}, !!")
+                system.Print(f"You guessed the word {word}!!")
         else:
-            SysPrint(f"You died, sorry. The word was {word}")
-            SysPrint(f"You guessed the word {word}, !!")
+            system.Print(f"You died, sorry. The word was {word}")
+            system.Print(f"You guessed the word {word}!!")
 
-def Hangman(debugging):
+def CommandHangman(debugging):
     Log(1, 'Hangman')
 
-    winsound.Beep(700, 500) #Plays a beeping sound
+    system.Beep(700, 500) #Plays a beeping sound
     play_hangman(debugging)
 
 def ClearTerminal(debugging: bool = False):
     Log(1, 'ClearTerminal')
 
-    winsound.Beep(700, 500) #Plays a beeping sound
+    system.Beep(700, 500) #Plays a beeping sound
     if debugging != True:
-        UserInput2 = userInput(0, "Are you sure(y/n)? ")
-        if UserInput2 == "y":
-            winsound.Beep(700, 500) #Plays a beeping sound
+        userInput2 = system.userInput("Are you sure(y/n)? ", Type=0)
+        if userInput2 == "y":
+    
             os.system('cls' if os.name == 'nt' else 'clear')
         else:
-            winsound.Beep(700, 500) #Plays a beeping sound
-            SysPrint("Canceled, did not clear the terminal.")
+    
+            system.Print("Canceled, did not clear the terminal.")
     else:
-        winsound.Beep(700, 500)#Plays a beeping sound
+        system.Beep(700, 500)#Plays a beeping sound
         #Clears the terminal
         os.system('cls' if os.name == 'nt' else 'clear')
 
-def OpenFile(path):
-    Log(1, 'OpenFile')
-
-    winsound.Beep(700, 500) #Plays a beeping sound
-    if os.path.exists(path):
-        file = open(path, "r")
-        SysPrint(file.read())
+def CommandOpenFileText(FileName: str) -> None:
+    Log(1, 'CommandOpenFileText')
+    Path: str = f"./accessible_files/{FileName}.txt"
+    if os.path.exists(Path):
+        file = open(Path, "r")
+        system.Print(file.read())
     else:
-        winsound.Beep(700, 500) #Plays a beeping sound
-        ErrPrint("File not found")
 
-def DebugAll():
-    Log(1, 'DebugAll')
+        system.ErrorPrint("File not found")
+
+def CommandOpenFileBin(FileName: str) -> None:
+    Log(1, 'CommandOpenFileBin')
+    global FolderName
+    Path = f"{FolderName}/accessible_files/{FileName}.bin"
+    if os.path.exists(Path):
+        file = open(Path, "r")
+        system.Print(file.read())
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandOpenFileDat(FileName: str) -> None:
+    Log(1, 'CommandOpenFileDat')
+    global FolderName
+    Path = f"{FolderName}/accessible_files/{FileName}.dat"
+    if os.path.exists(Path):
+        file = open(Path, "r")
+        system.Print(file.read())
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandOpenFileNone(FileName: str) -> None:
+    Log(1, 'CommandOpenFileNone')
+    global FolderName
+    Path = f"{FolderName}/accessible_files/{FileName}"
+    if os.path.exists(Path):
+        file = open(Path, "r")
+        system.Print(file.read())
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandDebugAll():
+    Log(1, 'CommandDebugAll')
     Log(5)
 
-    winsound.Beep(700, 500) #Plays a beeping sound
+    system.Beep(700, 500) #Plays a beeping sound
     CommandRandomInt(1, 999_999_999)
     time.sleep(1)
     CommandErrors()
@@ -268,22 +301,166 @@ def DebugAll():
     time.sleep(1)
     ClearTerminal(True)
     time.sleep(1)
-    OpenFile("C:/Users/daxos/Python/MTerminal/MTerminal_ALPHA_0.1.7/app/debug.txt")
     time.sleep(1)
     CommandExit()
     Log(6)
 
-def DebugNew():
+def CommandDebugNew():
     global NewCommands
-    Log(1, 'DebugNew')
+    Log(1, 'CommandDebugNew')
     Log(5)
 
-    winsound.Beep(700, 500) #Plays a beeping sound
+    system.Beep(700, 500) #Plays a beeping sound
 
     if NewCommands == False:
-        SysPrint("There are no new commands.")
+        system.Print("There are no new commands.")
 
     else:
         pass
 
-    Log(6)
+    Log(Type=6)
+
+def CommandWriteFileText(FileName: str) -> None:
+    Log(1, 'CommandWriteFileText')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}.txt"
+    if os.path.exists(Path):
+        file = open(Path, "a")
+        file.write(system.userInput(f"Enter data to be written to: {FileName}"))
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandWriteFileBin(FileName: str) -> None:
+    Log(1, 'CommandWriteFileBin')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}.bin"
+    if os.path.exists(Path):
+        file = open(Path, "a")
+        file.write(system.userInput(f"Enter data to be written to: {FileName}"))
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandWriteFileDat(FileName: str) -> None:
+    Log(1, 'CommandWriteFileDat')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}.dat"
+    if os.path.exists(Path):
+        file = open(Path, "a")
+        file.write(system.userInput(f"Enter data to be written to: {FileName}"))
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandWriteFileNone(FileName: str) -> None:
+    Log(1, 'CommandWriteFileText')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}"
+    if os.path.exists(Path):
+        file = open(Path, "a")
+        file.write(system.userInput(f"Enter data to be written to: {FileName}"))
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandCreateFileText(FileName: str) -> None:
+    Log(1, 'CommandCreateFileText')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}.txt"
+    if os.path.exists(Path):
+        file = open(Path, "x")
+        file.close()
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandCreateFileBin(FileName: str) -> None:
+    Log(1, 'CommandCreateFileBin')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}.bin"
+    if os.path.exists(Path):
+        file = open(Path, "x")
+        file.close()
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandCreateFileDat(FileName: str) -> None:
+    Log(1, 'CommandCreateFileDat')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}.dat"
+    if os.path.exists(Path):
+        file = open(Path, "x")
+        file.close()
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandCreateFileNone(FileName: str) -> None:
+    Log(1, 'CommandCreateFileNone')
+    global FolderName
+
+    Path = f"{FolderName}/accessible_files/{FileName}"
+    if os.path.exists(Path):
+        file = open(Path, "x")
+        file.close()
+    else:
+
+        system.ErrorPrint("File not found")
+
+def CommandCreateAdminFile(FileName: str) -> None:
+    if system.adminLoggedIn == False:
+        system.ErrorPrint("Not logged into admin account")
+        return
+    Log(1, 'CommandCreateAdminFile')
+    global FolderName
+
+    Path = f"{FolderName}/admin_files/{FileName}"
+    if os.path.exists(Path):
+        file = open(Path, "x")
+        file.close()
+    else:
+        system.ErrorPrint("File not found")
+
+def CommandReadAdminFile(FileName: str) -> None:
+    if system.adminLoggedIn == False:
+        system.ErrorPrint("Not logged into admin account")
+        return
+    Log(1, 'CommandReadAdminFile')
+    global FolderName
+    Path = f"{FolderName}/admin_files/{FileName}"
+    if os.path.exists(Path):
+        file = open(Path, "r")
+        system.Print(file.read())
+    else:
+        system.ErrorPrint("File not found")
+
+def CommandWriteAdminFile(FileName: str) -> None:
+    if system.adminLoggedIn == False:
+        system.ErrorPrint("Not logged into admin account")
+        return
+    Log(1, 'CommandWriteAdminFile')
+    global FolderName
+
+    Path = f"{FolderName}/admin_files/{FileName}"
+    if os.path.exists(Path):
+        file = open(Path, "a")
+        file.write(system.userInput(f"Enter data to be written to: {FileName}"))
+    else:
+        system.ErrorPrint("File not found")
+
+def CommandAudioMute() -> None:
+    Log(1, 'CommandAudioMute')
+    system.MuteAudio()
+
+def CommandAudiounmute() -> None:
+    Log(1, 'CommandAudioUnmute')
+    system.UnmuteAudio()
