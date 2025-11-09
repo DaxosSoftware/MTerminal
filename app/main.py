@@ -1,21 +1,31 @@
 import datetime
-from commands import *
+from commands import * # type: ignore #! This issue is not able to be fixed in this update, "# type: ignore" should not be removed under any circumstances unless the issue has been resolved.
 import winsound
-from system import *
 import system
+import inspect
+from system import Log
+
+RED = '\033[31m'
+GREEN = '\033[32m'
+YELLOW = '\033[33m'
+BLUE = '\033[34m'
+MAGENTA = '\033[35m'
+CYAN = '\033[36m'
+WHITE = '\033[37m'
+RESET = '\033[0m'
 
 #Logs the launching of the program
 Log(7)
 
 #Declares global variables
 Active = True
-ConsolVer = "BETA 0.1.8 Build 1"
-ConsolStartUpMessage = f"Welcome to MTerminal {ConsolVer}"
+ConsolVer = "ALPHA 0.1.8 Build #2025110801"
+ConsolStartUpMessage = f"Welcome to MTerminal \n {ConsolVer}"
 UserInput = ""
 UserInput2 = ""
 UserInput3 = ""
-CommandsExecutedInSesion = 0
-ComIdChar = "/" #Declares the character(s) to reconize commands
+CommandsExecutedInSession = 0
+ComIdChar = "/" #Declares the character(s) to recognize commands
 adminLoggedIn = system.adminLoggedIn
 
 Log(3, 'Global')
@@ -44,8 +54,8 @@ Com6 = ComIdChar + "hangman"
 Com6Def = ": Starts a game of hangman"
 Com7 = ComIdChar + "clear"
 Com7Def = ": Clears the terminal"
-Com8 = ComIdChar + "open.txt"
-Com8Def = ": Opens a text file"
+Com8 = ComIdChar + "file.open"
+Com8Def = ": Opens a file"
 Com9 = ComIdChar + "debug.all"
 Com9Def = ": Runs through all of the commands one after another to find errors and bugs"
 Com10 = ComIdChar + "debug.new"
@@ -56,15 +66,32 @@ Com12 = ComIdChar + "var"
 Com12Def = ": displays the value of a variable (For debugging)"
 Com13 = ComIdChar + "var.all"
 Com13Def = ": displays the values of all variables (For debugging)"
+Com14 = ComIdChar + "file.write"
+Com14Def = ": writes a line of data to the specified file"
+Com15 = ComIdChar + "file.create"
+Com15Def = ": creates a file with the specified extension and name"
+Com16 = ComIdChar + "file.create.admin"
+Com16Def = ": creates a file in the 'admin_files' folder (Admin only)"
+Com17 = ComIdChar + "file.write.admin"
+Com17Def = ": writes a line of data to the specified file in the 'admin_files' folder (Admin only)"
+Com18 = ComIdChar + "file.read.admin"
+Com18Def = ": reads the contents of a file in the 'admin_files' folder and prints out to the terminal(Admin only)"
+Com19 = ComIdChar + "settings.audio.mute"
+Com19Def = ": Mutes all audio from the program"
+Com20 = ComIdChar + "settings.audio.unmute"
+Com20Def = ": Unmutes all audio from the program"
+
+Commands = [Com1,Com2,Com3,Com4,Com5,Com6,Com7,Com8,Com9,Com10,Com11,Com12,Com13,Com14,Com15, Com16, Com17, Com18, Com19, Com20]
+CommandDefs = [Com1Def,Com2Def,Com3Def,Com4Def,Com5Def,Com6Def,Com7Def,Com8Def,Com9Def,Com10Def,Com11Def,Com12Def,Com13Def,Com14Def,Com15Def, Com16Def, Com17Def, Com18Def, Com19Def, Com20Def]
 
 OneParameterCommands = list()
 DualParameterCommands = list(Com2)
 
 Log(3, 'Global Command')
 
-def Error(Error: int, Data: str = "", Data2: str = ""):
+def Error(Error: int, Data: str = "", Data2: str = "") -> str:
 	"""
-	This function processes the userInputed data and returns the error message for a certain error
+	This function processes the inputted data and returns the error message for a certain error
 
 	Args:
 		Error (int): The integer value of the Error of the Error message you want
@@ -72,7 +99,7 @@ def Error(Error: int, Data: str = "", Data2: str = ""):
 		Data2 (str): The second set of Data needed for some error messages
 	
 	Returns:
-		str: The Error messaage created from the userInputted data
+		str: The Error message created from the Inputted data
 	"""
 
 	if Error == 0:
@@ -85,10 +112,13 @@ def Error(Error: int, Data: str = "", Data2: str = ""):
 		return f'Could not find file: {Data} ## ERR-2'
 	
 	elif Error == 3:
-		return f'An unexpected internal error has occured within: {Data} ## ERR-3'
+		return f'An unexpected internal error has occurred within: {Data} ## ERR-3'
 	
 	elif Error == 4:
 		return f"Arg: '{Data}' in function: '{Data2}' is invalid ## ERR-4"
+	
+	else:
+		return "An unknown error has occurred"
 	
 AdminOnlyCommands = [Com8, Com9, Com10, Com12, Com13]
 
@@ -106,29 +136,21 @@ def GetUserInput():
 	global UserInput2
 	global UserInput3
 	global Com2
-	UserInput = userInput(1)
+	UserInput = system.userInput(Type=1)
 	if UserInput in DualParameterCommands:
-		UserInput2 = userInput(0,"Enter first parameter for command: \n")
-		UserInput3 = userInput(0,"Enter second parameter for command: ")
+		UserInput2 = system.userInput("Enter first parameter for command: \n")
+		UserInput3 = system.userInput("Enter second parameter for command: ")
 	elif UserInput in OneParameterCommands:
-		UserInput2 = userInput(0,"Enter first parameter for command: ")
+		UserInput2 = system.userInput("Enter first parameter for command: ")
 
 #Defines the "help" command
 def CommandHelp():
 	Log(1)
-	SysPrint(f'{GREEN}---------- COMMANDS: ----------{RESET}')
-	SysPrint(f'{GREEN}--- Command: --------- Meaning: ---{RESET}')
-	SysPrint(f'{Com1}{Com1Def}')
-	SysPrint(f'{Com2}{Com2Def}')
-	SysPrint(f'{Com3}{Com3Def}')
-	SysPrint(f'{Com4}{Com4Def}')
-	SysPrint(f'{Com6}{Com6Def}')
-	SysPrint(f'{Com7}{Com7Def}')
-	SysPrint(f'{Com8}{Com8Def}')
-	SysPrint(f'{Com9}{Com9Def}') 
-	SysPrint(f'{Com10}{Com10Def}')
-	SysPrint(f'{Com11}{Com11Def}')
-	SysPrint(f'{Com12}{Com12Def}')
+	system.Print(f'{GREEN}---------- COMMANDS: ----------{RESET}')
+	system.Print(f'{GREEN}--- Command: --------- Meaning: ---{RESET}')
+	for Command in Commands[:]:
+		CommandDef = CommandDefs[Commands.index(Command)]
+		system.Print(f"{Command}{CommandDef}")
 
 def CommandVar(Var: str):
 	global adminLoggedIn
@@ -136,116 +158,59 @@ def CommandVar(Var: str):
 	global UserInput2
 	global UserInput3
 	if Var == "adminLoggedIn":
-		SysPrint(f'adminLoggedIn: {adminLoggedIn}')
+		system.Print(f'adminLoggedIn: {adminLoggedIn}')
 	
 	elif Var == "UserInput":
-		SysPrint(f'UserInput: {UserInput}')
+		system.Print(f'UserInput: {UserInput}')
 	
 	elif Var == "UserInput2":
-		SysPrint(f'UserInput2: {UserInput2}')
+		system.Print(f'UserInput2: {UserInput2}')
 	
 	elif Var == "UserInput3":
-		SysPrint(f'UserInput3: {UserInput3}')
+		system.Print(f'UserInput3: {UserInput3}')
 
 def CommandVarAll():
-	SysPrint(f"{GREEN}=========== Variables: ===========\n")
-	SysPrint(f"{GREEN}== Variable: =========== Value: ==")
+	system.Print(f"{GREEN}=========== Variables: ===========\n")
+	system.Print(f"{GREEN}== Variable: =========== Value: ==")
 	for Var in Vars:
 		CommandVar(Var)
 
 
-#Defines the function that processes the user's userInput
+#Defines the function that processes the user's system.userInput
 def ExecuteCommand():
-	global UserInput
-	global UserInput2
-	global UserInput3
-	global CommandsExecutedInSesion
-	global Com1
-	global Com2
-	global Com3
-	global Com4
-	global Com5
-	global Com6
-	global Com7
-	global Com8
-	global Com9
-	global Com10
-	global Com11
-	global ERR_0
-	global adminLoggedIn
-	Log(1, 'ExecuteCommand')
-	if adminLoggedIn == False:
-		if UserInput in AdminOnlyCommands:
-			ErrPrint("Not logged into admin account")
-			return
+	global Commands
+	for Command in Commands[:]:
+		if UserInput == Command:
+			# build a function name from the command string, e.g. "/help" -> "CommandHelp", "/var.all" -> "CommandVarAll"
+			func_name = "Command" + "".join(part.capitalize() for part in Command.lstrip(ComIdChar).split("."))
+			func = globals().get(func_name)
 
-	if UserInput[0] != ComIdChar:
-		SysPrint(UserInput)
-		CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-
-	else:
-
-		if UserInput == Com1:
-			CommandHelp()
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-
-		elif UserInput == Com2:
-			winsound.Beep(700, 500) #Plays a beeping sound
-			UserInput2 = userInput(0,'Enter parameter one: ')
-			UserInput3 = userInput(0,"Enter parameter two: ")
-			CommandRandomInt(int(UserInput2), int(UserInput3))
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-
-		elif UserInput == Com3:
-			CommandExit()
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-
-		elif UserInput == Com4:
-			CommandErrors()
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-
-		elif UserInput == Com5:
-			CommandPercy()
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-		
-		elif UserInput == Com6:
-			Hangman(False)
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
-
-		elif UserInput == Com7:
-			ClearTerminal(False)
-
-		elif UserInput == Com8:
-			UserInput2 = userInput(0,"Enter file path(Copy-paste) ")
-			OpenFile(UserInput2)
-
-		elif UserInput == Com9:
-			DebugAll()
-
-		elif UserInput == Com10:
-			DebugNew()
-		
-		elif UserInput == Com11:
-			SignIntoAdmin()
-			adminLoggedIn = system.adminLoggedIn
-		
-		elif UserInput == Com12:
-			UserInput2 = userInput(0,"Enter variable: ")
-			CommandVar(UserInput2)
-		
-		elif UserInput == Com13:
-			CommandVarAll()
-
-		else:
-			ErrPrint(ERR_0)
-			Log(2, Error(0, UserInput)) # type: ignore
-			CommandsExecutedInSesion = CommandsExecutedInSesion + 1
+			if callable(func):
+				try:
+					# decide how many arguments the target function expects (0..2) and call accordingly
+					params = len(inspect.signature(func).parameters)
+					if params == 0:
+						func()
+					elif params == 1:
+						func(UserInput2)
+					else:
+						# for 2 or more parameters we pass UserInput2 and UserInput3
+						func(UserInput2, UserInput3)
+				except Exception:
+					# report internal error if the call failed
+					system.ErrorPrint(Error(3, func_name))
+				# command handled, exit the loop / function
+				return
+			else:
+				# no handler found for this command
+				system.ErrorPrint(Error(0, Command))
+				return
 
 #Defines the start of the program
 def ProgramStart():
 	Log(1, 'ProgramStart')
-	SysPrint(ConsolStartUpMessage)
-	SysPrint("Enter '/help' for help with commands")
+	system.Print(ConsolStartUpMessage)
+	system.Print("Enter '/help' for help with commands")
 
 ProgramStart()
 while True:
